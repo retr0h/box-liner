@@ -1,0 +1,11 @@
+*.egg-info/
+*.py[rcod]
+.cache/
+.coverage
+.eggs/
+.tox/
+build/
+coverage.*
+dist/
+doc/build/
+htmlcov/
