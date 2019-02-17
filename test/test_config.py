@@ -26,8 +26,6 @@ from boxliner import container
 def test_config_member(config_instance):
     x = {
         'containers': [{
-            'name':
-            'instance',
             'image':
             'solita/ubuntu-systemd:latest',
             'command':

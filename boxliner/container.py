@@ -24,6 +24,7 @@ import os
 
 import docker
 import halo
+import namesgenerator
 
 from boxliner import util
 
@@ -42,14 +43,11 @@ class Container(object):
         self._d = d
         self._client = docker.from_env()
         self._goss_cmd = '/goss validate --color --format documentation'
-
-    @property
-    def name(self):
-        return self._d['name']
+        self._name = namesgenerator.get_random_name()
 
     @property
     def container_name(self):
-        return '{}@{}'.format(self.name, self.image)
+        return '{}@{}'.format(self._name, self.image)
 
     @property
     def image(self):
@@ -109,8 +107,8 @@ class Container(object):
             'image': self.image,
             'detach': True,
             'remove': False,
-            'name': self.name,
-            'hostname': self.name,
+            'name': self._name,
+            'hostname': self._name,
         }
 
         msg = 'Running container:{}'.format(self.container_name)
