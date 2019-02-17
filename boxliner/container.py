@@ -66,29 +66,27 @@ class Container(object):
         return os.path.abspath(self._d['goss_binary'])
 
     def validate(self):
+        print('[{}]'.format(self.container_name))
         container = self._run()
 
-        msg = 'validating container:{}'.format(self.container_name)
-        with halo.Halo(text=msg, spinner='dots') as spinner:
+        with halo.Halo(text='Validating', spinner='dots') as spinner:
             exit_code, output = container.exec_run(cmd=self._goss_cmd)
             if exit_code != 0:
                 spinner.fail()
             else:
                 spinner.succeed()
 
-        msg = 'Stopping container:{}'.format(self.container_name)
-        with halo.Halo(text=msg, spinner='dots') as spinner:
+        with halo.Halo(text='Stopping', spinner='dots') as spinner:
             container.stop()
             spinner.succeed()
 
-        msg = 'Removing container:{}'.format(self.container_name)
-        with halo.Halo(text=msg, spinner='dots') as spinner:
+        with halo.Halo(text='Removing', spinner='dots') as spinner:
             container.remove()
             spinner.succeed()
 
         if exit_code != 0:
             print(output.decode('utf-8'))
-            msg = 'validation failed'
+            msg = 'Validation Failed'
             util.sysexit_with_message(msg)
 
     def _run(self):
@@ -111,8 +109,7 @@ class Container(object):
             'hostname': self._name,
         }
 
-        msg = 'Running container:{}'.format(self.container_name)
-        with halo.Halo(text=msg, spinner='dots') as spinner:
+        with halo.Halo(text='Running', spinner='dots') as spinner:
             c = self._client.containers.run(**kwargs)
             spinner.succeed()
 
