@@ -29,8 +29,7 @@ from boxliner import config
 def config_data():
     return """
 containers:
-  - name: instance
-    image: solita/ubuntu-systemd:latest
+  - image: solita/ubuntu-systemd:latest
     command: /sbin/init
     goss_file: ./test/test.yml
     goss_binary: /Users/jodewey/Downloads/goss-linux-amd64
