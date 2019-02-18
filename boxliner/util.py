@@ -58,16 +58,6 @@ def safe_load(string):
         sysexit_with_message(str(e))
 
 
-def safe_load_file(filename):
-    """
-    Parse the provided YAML file and returns a dict.
-    :param filename: A string containing an absolute path to the file to parse.
-    :return: dict
-    """
-    with open_file(filename) as stream:
-        return safe_load(stream)
-
-
 @contextlib.contextmanager
 def open_file(filename, mode='r'):
     """
@@ -78,3 +68,14 @@ def open_file(filename, mode='r'):
     """
     with open(filename, mode) as stream:
         yield stream
+
+
+def write_file(filename, content):
+    """
+    Writes a file with the given filename and content and returns None.
+    :param filename: A string containing the target filename.
+    :param content: A string containing the data to be written.
+    :return: None
+    """
+    with open_file(filename, 'w') as f:
+        f.write(content)

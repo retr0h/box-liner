@@ -20,68 +20,31 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+import contextlib
 import os
+import random
+import string
 
 import pytest
 
-from boxliner import config
+
+@pytest.fixture
+def random_string(length=5):
+    return ''.join(
+        random.choice(string.ascii_uppercase) for _ in range(length))
+
+
+@contextlib.contextmanager
+def change_dir_to(dir_name):
+    cwd = os.getcwd()
+    os.chdir(dir_name)
+    yield
+    os.chdir(cwd)
 
 
 @pytest.fixture
-def _data():
-    return """
-image: solita/ubuntu-systemd:latest
-command: /sbin/init
-goss_file: ./test/test.yml
-goss_binary: /Users/jodewey/Downloads/goss-linux-amd64
-"""
+def temp_dir(tmpdir, random_string, request):
+    directory = tmpdir.mkdir(random_string)
 
-
-@pytest.fixture
-def _args():
-    return {}
-
-
-@pytest.fixture
-def _command_args():
-    return {}
-
-
-@pytest.fixture
-def _instance(_data, _args, _command_args):
-    return config.Config(_data, _args, _command_args)
-
-
-def test_image_property(_instance):
-    x = 'solita/ubuntu-systemd:latest'
-
-    assert x == _instance.image
-
-
-def test_command_property(_instance):
-    x = '/sbin/init'
-
-    assert x == _instance.command
-
-
-def test_goss_file_property(_instance):
-    x = os.path.abspath('test/test.yml')
-
-    assert x == _instance.goss_file
-
-
-def test_goss_binary_property(_instance):
-    x = '/Users/jodewey/Downloads/goss-linux-amd64'
-
-    assert x == _instance.goss_binary
-
-
-def test_validate(_instance):
-    pass
-    #  _instance.validate()
-
-
-def test_get_display_name_property(_instance):
-    x = '{}@{}'.format(_instance._random_name, _instance.image)
-
-    assert x == _instance._get_display_name()
+    with change_dir_to(directory.strpath):
+        yield directory

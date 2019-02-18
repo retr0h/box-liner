@@ -28,20 +28,9 @@ from boxliner import config
 from boxliner import util
 
 
-class Run(object):
-    """
-    """
-
-    def __init__(self):
-        pass
-
-    def loads(self):
-        pass
-
-
 @click.command()
 @click.pass_context
-def validate(ctx):  # pragma: no cover
+def validate(ctx):
     """ Run and validate the container. """
 
     args = ctx.obj.get('args')
