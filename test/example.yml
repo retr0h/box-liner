@@ -1,6 +1,5 @@
 ---
-containers:
-  - image: solita/ubuntu-systemd:latest
-    command: /sbin/init
-    goss_file: ./test/test.yml
-    goss_binary: /Users/jodewey/Downloads/goss-linux-amd64
+image: solita/ubuntu-systemd:latest
+command: /sbin/init
+goss_file: ./test/test.yml
+goss_binary: /Users/jodewey/Downloads/goss-linux-amd64

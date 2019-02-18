@@ -42,7 +42,7 @@ class Run(object):
 @click.command()
 @click.pass_context
 def validate(ctx):  # pragma: no cover
-    """ Run and validate the container(s). """
+    """ Run and validate the container. """
 
     args = ctx.obj.get('args')
     command_args = {}
@@ -52,8 +52,7 @@ def validate(ctx):  # pragma: no cover
 
     with util.open_file(filename) as stream:
         c = config.Config(stream.read(), args, command_args)
-        for container in c.containers:
-            container.validate()
+        c.validate()
 
 
 def _setup(filename):

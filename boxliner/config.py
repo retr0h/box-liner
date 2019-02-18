@@ -20,7 +20,12 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from boxliner import container
+import os
+
+import docker
+import halo
+import namesgenerator
+
 from boxliner import util
 
 
@@ -41,17 +46,80 @@ class Config(object):
         :returns: None
         """
         self._data = data
-        self.config = self._get_config()
+        self._config = self._get_config()
+        self._client = docker.from_env()
+        self._goss_cmd = '/goss validate --color --format documentation'
+        self._name = namesgenerator.get_random_name()
 
     @property
-    def containers(self):
-        """
-        Return a list of ``Container`` objects.
-        :returns: list
-        """
-        return [container.Container(c) for c in self.config['containers']]
+    def name(self):
+        return '{}@{}'.format(self._name, self.image)
+
+    @property
+    def image(self):
+        return self._config['image']
+
+    @property
+    def command(self):
+        return self._config['command']
+
+    @property
+    def goss_file(self):
+        return os.path.abspath(self._config['goss_file'])
+
+    @property
+    def goss_binary(self):
+        return os.path.abspath(self._config['goss_binary'])
+
+    def validate(self):
+        print('[{}]'.format(self.name))
+        container = self._run()
+
+        with halo.Halo(text='Validating', spinner='dots') as spinner:
+            exit_code, output = container.exec_run(cmd=self._goss_cmd)
+            if exit_code != 0:
+                spinner.fail()
+            else:
+                spinner.succeed()
+
+        with halo.Halo(text='Stopping', spinner='dots') as spinner:
+            container.stop()
+            spinner.succeed()
+
+        with halo.Halo(text='Removing', spinner='dots') as spinner:
+            container.remove()
+            spinner.succeed()
+
+        if exit_code != 0:
+            print(output.decode('utf-8'))
+            msg = 'Validation Failed'
+            util.sysexit_with_message(msg)
+
+    def _run(self):
+        kwargs = {
+            'volumes': {
+                self.goss_binary: {
+                    'bind': '/goss',
+                    'mode': 'ro'
+                },
+                self.goss_file: {
+                    'bind': '/goss.yaml',
+                    'mode': 'ro'
+                },
+            },
+            'command': self.command,
+            'image': self.image,
+            'detach': True,
+            'remove': False,
+            'name': self._name,
+            'hostname': self._name,
+        }
+
+        with halo.Halo(text='Running', spinner='dots') as spinner:
+            c = self._client.containers.run(**kwargs)
+            spinner.succeed()
+
+        return c
 
     def _get_config(self):
-        """
-        """
         return util.safe_load(self._data)
