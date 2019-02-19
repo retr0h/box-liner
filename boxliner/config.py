@@ -46,29 +46,43 @@ class Config(object):
         :returns: None
         """
         self._data = data
+        self._args = args
+        self._command_args = command_args
         self._config = self._get_config()
         self._client = docker.from_env()
+        # TODO(retr0h): Move to cli as override.
         self._goss_cmd = '/goss validate --color --format documentation'
         self._random_name = namesgenerator.get_random_name()
 
     @property
     def image(self):
+        if self._command_args.get('image'):
+            return self._command_args['image']
         return self._config['image']
 
     @property
     def command(self):
+        if self._command_args.get('command'):
+            return self._command_args['command']
         return self._config['command']
 
     @property
     def goss_file(self):
-        return os.path.abspath(self._config['goss_file'])
+        if self._command_args.get('goss_file'):
+            p = self._command_args['goss_file']
+        else:
+            p = self._config['goss_file']
+
+        return os.path.abspath(p)
 
     @property
     def goss_binary(self):
-        return os.path.abspath(self._config['goss_binary'])
+        if self._command_args.get('goss_binary'):
+            return self._command_args['goss_binary']
+        return self._config['goss_binary']
 
     def validate(self):
-        print('[{}]'.format(self.name))
+        print('[{}]'.format(self._get_display_name()))
         container = self._run()
 
         with halo.Halo(text='Validating', spinner='dots') as spinner:
@@ -107,8 +121,8 @@ class Config(object):
             'image': self.image,
             'detach': True,
             'remove': False,
-            'name': self._name,
-            'hostname': self._name,
+            'name': self._random_name,
+            'hostname': self._random_name,
         }
 
         with halo.Halo(text='Running', spinner='dots') as spinner:

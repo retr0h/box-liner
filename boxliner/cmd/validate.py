@@ -29,14 +29,22 @@ from boxliner import util
 
 
 @click.command()
+@click.option('--image', help='Image to test.')
+@click.option('--command', help='Command image should execute.')
+@click.option('--goss-file', help='Path to Goss test file.')
+@click.option('--goss-binary', help='Path to Goss binary.')
 @click.pass_context
-def validate(ctx):
+def validate(ctx, image, command, goss_file, goss_binary):
     """ Run and validate the container. """
 
     args = ctx.obj.get('args')
-    command_args = {}
+    command_args = {
+        'image': image,
+        'command': command,
+        'goss_file': goss_file,
+        'goss_binary': goss_binary,
+    }
     filename = args.get('filename')
-    #  debug = args.get('debug')
     _setup(filename)
 
     with util.open_file(filename) as stream:
