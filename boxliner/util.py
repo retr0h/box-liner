@@ -20,7 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import contextlib
 import sys
 
 import colorama
@@ -56,26 +55,3 @@ def safe_load(string):
         return yaml.safe_load(string) or {}
     except yaml.scanner.ScannerError as e:
         sysexit_with_message(str(e))
-
-
-@contextlib.contextmanager
-def open_file(filename, mode='r'):
-    """
-    Open the provide file safely and returns a file type.
-    :param filename: A string containing an absolute path to the file to open.
-    :param mode: A string describing the way in which the file will be used.
-    :return: file type
-    """
-    with open(filename, mode) as stream:
-        yield stream
-
-
-def write_file(filename, content):
-    """
-    Writes a file with the given filename and content and returns None.
-    :param filename: A string containing the target filename.
-    :param content: A string containing the data to be written.
-    :return: None
-    """
-    with open_file(filename, 'w') as f:
-        f.write(content)
