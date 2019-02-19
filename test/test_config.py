@@ -58,8 +58,26 @@ def test_image_property(_instance):
     assert x == _instance.image
 
 
+def test_image_property_override_from_cli(_instance):
+    _instance._command_args = {
+        'image': 'foo:latest',
+    }
+    x = 'foo:latest'
+
+    assert x == _instance.image
+
+
 def test_command_property(_instance):
     x = '/sbin/init'
+
+    assert x == _instance.command
+
+
+def test_command_property_override_from_cli(_instance):
+    _instance._command_args = {
+        'command': 'foo',
+    }
+    x = 'foo'
 
     assert x == _instance.command
 
@@ -70,7 +88,25 @@ def test_goss_file_property(_instance):
     assert x == _instance.goss_file
 
 
+def test_goss_file_property_override_from_cli(_instance):
+    _instance._command_args = {
+        'goss_file': 'foo',
+    }
+    x = os.path.abspath('foo')
+
+    assert x == _instance.goss_file
+
+
 def test_goss_binary_property(_instance):
+    _instance._command_args = {
+        'goss_binary': 'foo',
+    }
+    x = 'foo'
+
+    assert x == _instance.goss_binary
+
+
+def test_goss_binary_property_override_from_cli(_instance):
     x = '/Users/jodewey/Downloads/goss-linux-amd64'
 
     assert x == _instance.goss_binary
