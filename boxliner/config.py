@@ -83,7 +83,14 @@ class Config(object):
 
     def validate(self):
         print('[{}]'.format(self._get_display_name()))
-        container = self._run()
+        try:
+            container = self._run()
+        except docker.errors.ImageNotFound as e:
+            msg = "Image not Found\n\n{}".format(e)
+            util.sysexit_with_message(msg)
+        except docker.errors.APIError as e:
+            msg = 'Failed to Run Container\n\n{}'.format(e)
+            util.sysexit_with_message(msg)
 
         with halo.Halo(text='Validating', spinner='dots') as spinner:
             exit_code, output = container.exec_run(cmd=self._goss_cmd)
