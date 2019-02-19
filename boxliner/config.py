@@ -49,11 +49,7 @@ class Config(object):
         self._config = self._get_config()
         self._client = docker.from_env()
         self._goss_cmd = '/goss validate --color --format documentation'
-        self._name = namesgenerator.get_random_name()
-
-    @property
-    def name(self):
-        return '{}@{}'.format(self._name, self.image)
+        self._random_name = namesgenerator.get_random_name()
 
     @property
     def image(self):
@@ -123,3 +119,6 @@ class Config(object):
 
     def _get_config(self):
         return util.safe_load(self._data)
+
+    def _get_display_name(self):
+        return '{}@{}'.format(self._random_name, self.image)
