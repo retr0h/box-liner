@@ -32,16 +32,12 @@ click_completion.init()
 
 @click.group()
 @click.option(
-    '--filename',
-    default='boxliner.yml',
-    help='Path to boxliner file.  Default boxliner.yml')
-@click.option(
     '--debug/--no-debug',
     default=False,
     help='Enable or disable debug mode. Default is disabled.')
 @click.version_option(version=boxliner.__version__)
 @click.pass_context
-def main(ctx, filename, debug):  # pragma: no cover
+def main(ctx, debug):  # pragma: no cover
     """
     \b
     .              .
@@ -56,7 +52,6 @@ def main(ctx, filename, debug):  # pragma: no cover
     ctx.obj = {}
     ctx.obj['args'] = {}
     ctx.obj['args']['debug'] = debug
-    ctx.obj['args']['filename'] = filename
 
 
 main.add_command(cmd.validate.validate)
