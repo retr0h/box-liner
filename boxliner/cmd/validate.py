@@ -43,12 +43,19 @@ def _validate(c):
     type=click.File('r'))
 @click.option('--image', help='Image to test.')
 @click.option('--command', help='Command image should execute.')
-@click.option('--goss-file', help='Path to Goss test file.')
-@click.option('--goss-binary', help='Path to Goss binary.')
+@click.option(
+    '--goss-file',
+    default='test.yml',
+    help='Path to Goss test file.  Default test.yml')
+@click.option(
+    '--goss-binary',
+    default='goss-linux-amd64',
+    help='Path to Goss binary.  Default goss-linux-amd64')
 @click.option(
     '--goss-command',
     default='/goss validate --color --format documentation',
-    help='Goss command to execute.')
+    help=('Goss command to execute.  '
+          'Default `/goss validate --color --format documentation`'))
 @click.pass_context
 def validate(ctx, filename, image, command, goss_file, goss_binary,
              goss_command):
