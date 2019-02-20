@@ -20,19 +20,27 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import os
-
 import click
 
-from boxliner import config
+from boxliner import config_schema
 from boxliner import util
+
+
+def _validate(c):
+    result = config_schema.ConfigSchema().load(c)
+    if result.errors:
+        msg = 'Validation Failed\n\n{}'.format(result.errors)
+        util.sysexit_with_message(msg)
+
+    return result
 
 
 @click.command()
 @click.option(
     '--filename',
     default='boxliner.yml',
-    help='Path to boxliner file.  Default boxliner.yml')
+    help='Path to boxliner file.  Default boxliner.yml',
+    type=click.File('r'))
 @click.option('--image', help='Image to test.')
 @click.option('--command', help='Command image should execute.')
 @click.option('--goss-file', help='Path to Goss test file.')
@@ -47,15 +55,13 @@ def validate(ctx, filename, image, command, goss_file, goss_binary):
         'command': command,
         'goss_file': goss_file,
         'goss_binary': goss_binary,
+        'debug': args.get('debug'),
     }
-    _setup(filename)
 
-    with util.open_file(filename) as stream:
-        c = config.Config(stream.read(), args, command_args)
-        c.validate()
+    f = filename.read()
+    c = util.safe_load(f)
+    filtered = {k: v for k, v in command_args.items() if v is not None}
+    c.update(filtered)
 
-
-def _setup(filename):
-    if not os.path.exists(filename):
-        msg = 'Unable to find {}. Exiting.'.format(filename)
-        util.sysexit_with_message(msg)
+    result = _validate(c)
+    result.data.validate()

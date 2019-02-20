@@ -20,65 +20,28 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import os
+import re
 
-import pytest
+import marshmallow
 
 from boxliner import config
-from boxliner import util
 
 
-@pytest.fixture
-def _data():
-    return """
-image: solita/ubuntu-systemd:latest
-command: /sbin/init
-goss_file: ./test/test.yml
-goss_binary: /usr/local/bin/goss-linux-amd64
-"""
+class ConfigSchema(marshmallow.Schema):
+    image = marshmallow.fields.Str()
+    command = marshmallow.fields.Str()
+    goss_file = marshmallow.fields.Str()
+    goss_binary = marshmallow.fields.Str()
 
+    @marshmallow.post_load
+    def make_config(self, data):
+        return config.Config(data)
 
-@pytest.fixture
-def _instance(_data):
-    c = util.safe_load(_data)
+    @marshmallow.validates_schema
+    def validate_strings(self, data):
+        """ Validate image contains image:tag. """
 
-    return config.Config(c)
-
-
-def test_image_property(_instance):
-    x = 'solita/ubuntu-systemd:latest'
-
-    assert x == _instance.image
-
-
-def test_command_property(_instance):
-    x = '/sbin/init'
-
-    assert x == _instance.command
-
-
-def test_goss_file_property(_instance):
-    x = os.path.abspath('test/test.yml')
-
-    assert x == _instance.goss_file
-
-
-def test_goss_binary_property(_instance):
-    x = '/usr/local/bin/goss-linux-amd64'
-
-    assert x == _instance.goss_binary
-
-
-def test_debug_property(_instance):
-    assert not _instance.debug
-
-
-def test_validate(_instance):
-    pass
-    #  _instance.validate()
-
-
-def test_get_display_name_property(_instance):
-    x = '{}@{}'.format(_instance._random_name, _instance.image)
-
-    assert x == _instance._get_display_name()
+        image = data.get('image')
+        if image and not re.match(r'^[\w\-\/]+:[\w]+$', image):
+            raise marshmallow.ValidationError(
+                'Not valid must contain image:tag.', 'image')

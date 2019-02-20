@@ -20,9 +20,6 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import io
-import os
-
 import pytest
 
 from boxliner import util
@@ -80,16 +77,3 @@ def test_safe_load_exits_when_cannot_parse():
         util.safe_load(data)
 
     assert 1 == e.value.code
-
-
-def test_open_file(temp_dir):
-    path = os.path.join(temp_dir.strpath, 'foo')
-    util.write_file(path, 'foo: bar')
-
-    with util.open_file(path) as stream:
-        try:
-            file_types = (file, io.IOBase)
-        except NameError:
-            file_types = io.IOBase
-
-        assert isinstance(stream, file_types)

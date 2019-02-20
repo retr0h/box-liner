@@ -35,20 +35,15 @@ class Config(object):
     loads them into a ``Config`` class, which Box Liner operates upon.
     """
 
-    def __init__(self, data, args, command_args):
+    def __init__(self, config):
         """
         Initialize a new config class and returns None.
         :param data: A string containing the config data to path to load.
-        :param args: An optional dict of options, arguments and commands from
-         the CLI.
         :param command_args: An optional dict of options passed to the
          subcommand from the CLI.
         :returns: None
         """
-        self._data = data
-        self._args = args
-        self._command_args = command_args
-        self._config = self._get_config()
+        self._config = config
         self._client = docker.from_env()
         # TODO(retr0h): Move to cli as override.
         self._goss_cmd = '/goss validate --color --format documentation'
@@ -56,30 +51,23 @@ class Config(object):
 
     @property
     def image(self):
-        if self._command_args.get('image'):
-            return self._command_args['image']
         return self._config['image']
 
     @property
     def command(self):
-        if self._command_args.get('command'):
-            return self._command_args['command']
         return self._config['command']
 
     @property
     def goss_file(self):
-        if self._command_args.get('goss_file'):
-            p = self._command_args['goss_file']
-        else:
-            p = self._config['goss_file']
-
-        return os.path.abspath(p)
+        return os.path.abspath(self._config['goss_file'])
 
     @property
     def goss_binary(self):
-        if self._command_args.get('goss_binary'):
-            return self._command_args['goss_binary']
         return self._config['goss_binary']
+
+    @property
+    def debug(self):
+        return self._config.get('debug', False)
 
     def validate(self):
         print('[{}]'.format(self._get_display_name()))
@@ -137,9 +125,6 @@ class Config(object):
             spinner.succeed()
 
         return c
-
-    def _get_config(self):
-        return util.safe_load(self._data)
 
     def _get_display_name(self):
         return '{}@{}'.format(self._random_name, self.image)
