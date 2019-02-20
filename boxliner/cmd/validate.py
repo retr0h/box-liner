@@ -45,8 +45,13 @@ def _validate(c):
 @click.option('--command', help='Command image should execute.')
 @click.option('--goss-file', help='Path to Goss test file.')
 @click.option('--goss-binary', help='Path to Goss binary.')
+@click.option(
+    '--goss-command',
+    default='/goss validate --color --format documentation',
+    help='Goss command to execute.')
 @click.pass_context
-def validate(ctx, filename, image, command, goss_file, goss_binary):
+def validate(ctx, filename, image, command, goss_file, goss_binary,
+             goss_command):
     """ Run and validate the container. """
 
     args = ctx.obj.get('args')
@@ -55,6 +60,7 @@ def validate(ctx, filename, image, command, goss_file, goss_binary):
         'command': command,
         'goss_file': goss_file,
         'goss_binary': goss_binary,
+        'goss_command': goss_command,
         'debug': args.get('debug'),
     }
 

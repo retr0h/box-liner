@@ -38,15 +38,11 @@ class Config(object):
     def __init__(self, config):
         """
         Initialize a new config class and returns None.
-        :param data: A string containing the config data to path to load.
-        :param command_args: An optional dict of options passed to the
-         subcommand from the CLI.
+        :param config: A dict containing the config data.
         :returns: None
         """
         self._config = config
         self._client = docker.from_env()
-        # TODO(retr0h): Move to cli as override.
-        self._goss_cmd = '/goss validate --color --format documentation'
         self._random_name = namesgenerator.get_random_name()
 
     @property
@@ -66,6 +62,10 @@ class Config(object):
         return self._config['goss_binary']
 
     @property
+    def goss_command(self):
+        return self._config['goss_command']
+
+    @property
     def debug(self):
         return self._config.get('debug', False)
 
@@ -81,7 +81,7 @@ class Config(object):
             util.sysexit_with_message(msg)
 
         with halo.Halo(text='Validating', spinner='dots') as spinner:
-            exit_code, output = container.exec_run(cmd=self._goss_cmd)
+            exit_code, output = container.exec_run(cmd=self.goss_command)
             if exit_code != 0:
                 spinner.fail()
             else:

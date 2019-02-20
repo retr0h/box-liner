@@ -35,6 +35,7 @@ image: solita/ubuntu-systemd:latest
 command: /sbin/init
 goss_file: ./test/test.yml
 goss_binary: /usr/local/bin/goss-linux-amd64
+goss_command: goss cmd
 """
 
 
@@ -67,6 +68,12 @@ def test_goss_binary_property(_instance):
     x = '/usr/local/bin/goss-linux-amd64'
 
     assert x == _instance.goss_binary
+
+
+def test_goss_command_property(_instance):
+    x = 'goss cmd'
+
+    assert x == _instance.goss_command
 
 
 def test_debug_property(_instance):

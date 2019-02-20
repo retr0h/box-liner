@@ -32,6 +32,7 @@ class ConfigSchema(marshmallow.Schema):
     command = marshmallow.fields.Str()
     goss_file = marshmallow.fields.Str()
     goss_binary = marshmallow.fields.Str()
+    goss_command = marshmallow.fields.Str()
 
     @marshmallow.post_load
     def make_config(self, data):
