@@ -20,43 +20,14 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import click
-
-from boxliner import main
+import docker
 
 
-@click.command()
-@click.option(
-    '--compose-file',
-    default='docker-compose.yml',
-    help='Path to docker-compose file.  Default docker-compose.yml',
-    type=click.File('r'))
-@click.option(
-    '--goss-file',
-    default='test.yml',
-    help='Path to Goss test file.  Default test.yml',
-    type=click.File('r'))
-@click.option(
-    '--goss-binary',
-    default='goss-linux-amd64',
-    help='Path to Goss binary.  Default goss-linux-amd64',
-    type=click.File('r'))
-@click.option(
-    '--goss-command',
-    default='/goss validate --color --format documentation',
-    help='Goss command to execute.')
-@click.pass_context
-def validate(ctx, compose_file, goss_file, goss_binary, goss_command):
-    """ Run and validate the container. """
+class Docker(object):
+    def __init__(self):
+        self._client = docker.from_env()
 
-    ctx_args = ctx.obj.get('args')
-    args = {'debug': ctx_args.get('debug')}
+    def exec_run(self, name, command):
+        c = self._client.containers.get(name)
 
-    command_args = {
-        'compose_file': compose_file.name,
-        'goss_file': goss_file.name,
-        'goss_binary': goss_binary.name,
-        'goss_command': goss_command,
-    }
-
-    main.main(args, command_args)
+        return c.exec_run(cmd=command)

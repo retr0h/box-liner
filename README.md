@@ -4,19 +4,21 @@
 
 # Box Liner
 
-Box Liner is a tool which runs a [Docker container][1] against a set of
-[Goss][2] validation tests.
+Box Liner is a tool which runs a suite of validation tests against the
+specified containers.
 
+Intended to test [Docker][1] containers post build and prior to publishing.
+The container(s) lifecycle is managed through [Docker Compose][2], and
+validation is currently handled by [Goss][3] with plans to swich to
+[InSpec][4].
 
-Intended to test a docker container post build and prior to publishing.  The
-`boxliner.yml` file should be checked into the project which hosts the
-Dockerfile, or repo which is responsible for building the container.
-
-Box Liner is not intended to test the multi-container interactions.  This is
-better served by a clustering/scheduling framework.
+Tests are run local to the container, with plans to add external integration
+tests in the future.
 
 [1]: https://www.docker.com/
-[2]: https://github.com/aelsabbahy/goss
+[2]: https://docs.docker.com/compose/
+[3]: https://github.com/aelsabbahy/goss/
+[4]: https://www.inspec.io/
 
 ## Install
 
@@ -26,14 +28,20 @@ better served by a clustering/scheduling framework.
 
 ## Usage
 
-Create a `boxliner.yml` with the following content.
+Create a `docker-compose.yml` file similar to the following:
 
 ```yaml
 ---
-image: solita/ubuntu-systemd:latest
-command: /sbin/init
-goss_file: relative/path/to/test.yml
-goss_binary: /path/to/goss/binary/goss-linux-amd64
+version: "3"
+services:
+  test-1:
+    image: solita/ubuntu-systemd:latest
+    hostname: test-1
+    command: >-
+      /sbin/init
+    volumes:
+      - ${BOXLINER_GOSS_FILE}:/goss.yaml:ro
+      - ${BOXLINER_GOSS_BINARY}:/goss:ro
 ```
 
 Create a `test.yml` with the tests to perform.  Reference Goss' full
