@@ -22,70 +22,46 @@
 
 import os
 
-import pytest
 
-from boxliner import config
-from boxliner import util
+def test_compose_file_property(config_instance):
+    x = os.path.abspath('compose_file')
 
-
-@pytest.fixture
-def _data():
-    return """
-image: solita/ubuntu-systemd:latest
-command: /sbin/init
-goss_file: ./test/test.yml
-goss_binary: /usr/local/bin/goss-linux-amd64
-goss_command: goss cmd
-"""
+    assert x == config_instance.compose_file
 
 
-@pytest.fixture
-def _instance(_data):
-    c = util.safe_load(_data)
+def test_goss_file_property(config_instance):
+    x = os.path.abspath('goss_file')
 
-    return config.Config(c)
-
-
-def test_image_property(_instance):
-    x = 'solita/ubuntu-systemd:latest'
-
-    assert x == _instance.image
+    assert x == config_instance.goss_file
 
 
-def test_command_property(_instance):
-    x = '/sbin/init'
+def test_goss_binary_property(config_instance):
+    x = 'goss_binary'
 
-    assert x == _instance.command
-
-
-def test_goss_file_property(_instance):
-    x = os.path.abspath('test/test.yml')
-
-    assert x == _instance.goss_file
+    assert x == config_instance.goss_binary
 
 
-def test_goss_binary_property(_instance):
-    x = '/usr/local/bin/goss-linux-amd64'
+def test_goss_command_property(config_instance):
+    x = 'goss_command'
 
-    assert x == _instance.goss_binary
-
-
-def test_goss_command_property(_instance):
-    x = 'goss cmd'
-
-    assert x == _instance.goss_command
+    assert x == config_instance.goss_command
 
 
-def test_debug_property(_instance):
-    assert not _instance.debug
+def test_debug_property(config_instance):
+    assert not config_instance.debug
 
 
-def test_validate(_instance):
-    pass
-    #  _instance.validate()
+def test_debug_setter(config_instance):
+    config_instance.debug = True
+
+    assert config_instance.debug
 
 
-def test_get_display_name_property(_instance):
-    x = '{}@{}'.format(_instance._random_name, _instance.image)
+def test_env_property(config_instance):
+    env = os.environ.copy()
+    env.update({
+        'BOXLINER_GOSS_FILE': os.path.abspath('goss_file'),
+        'BOXLINER_GOSS_BINARY': 'goss_binary',
+    })
 
-    assert x == _instance._get_display_name()
+    assert env == config_instance.env

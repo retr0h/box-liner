@@ -20,43 +20,19 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import click
+import pytest
 
-from boxliner import main
+from boxliner.client import docker
 
 
-@click.command()
-@click.option(
-    '--compose-file',
-    default='docker-compose.yml',
-    help='Path to docker-compose file.  Default docker-compose.yml',
-    type=click.File('r'))
-@click.option(
-    '--goss-file',
-    default='test.yml',
-    help='Path to Goss test file.  Default test.yml',
-    type=click.File('r'))
-@click.option(
-    '--goss-binary',
-    default='goss-linux-amd64',
-    help='Path to Goss binary.  Default goss-linux-amd64',
-    type=click.File('r'))
-@click.option(
-    '--goss-command',
-    default='/goss validate --color --format documentation',
-    help='Goss command to execute.')
-@click.pass_context
-def validate(ctx, compose_file, goss_file, goss_binary, goss_command):
-    """ Run and validate the container. """
+@pytest.fixture
+def _instance():
+    return docker.Docker()
 
-    ctx_args = ctx.obj.get('args')
-    args = {'debug': ctx_args.get('debug')}
 
-    command_args = {
-        'compose_file': compose_file.name,
-        'goss_file': goss_file.name,
-        'goss_binary': goss_binary.name,
-        'goss_command': goss_command,
-    }
+def test_exec_run(_instance, mocker):
+    m = mocker.patch('docker.models.containers.ContainerCollection.get')
+    m.return_value = mocker.Mock(exec_run=mocker.Mock(return_value='foo'))
+    x = 'foo'
 
-    main.main(args, command_args)
+    assert x == _instance.exec_run('foo', 'bar')

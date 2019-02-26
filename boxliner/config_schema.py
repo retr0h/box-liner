@@ -20,29 +20,20 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import re
-
 import marshmallow
 
 from boxliner import config
 
 
 class ConfigSchema(marshmallow.Schema):
-    image = marshmallow.fields.Str()
-    command = marshmallow.fields.Str()
+    compose_file = marshmallow.fields.Str()
+    goss_file = marshmallow.fields.Str()
     goss_file = marshmallow.fields.Str()
     goss_binary = marshmallow.fields.Str()
     goss_command = marshmallow.fields.Str()
+    debug = marshmallow.fields.Bool()
+    env = marshmallow.fields.Dict()
 
     @marshmallow.post_load
     def make_config(self, data):
         return config.Config(data)
-
-    @marshmallow.validates_schema
-    def validate_strings(self, data):
-        """ Validate image contains image:tag. """
-
-        image = data.get('image')
-        if image and not re.match(r'^[\w\-\/]+:[\w]+$', image):
-            raise marshmallow.ValidationError(
-                'Not valid must contain image:tag.', 'image')

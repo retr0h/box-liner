@@ -19,3 +19,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
+
+import pytest
+
+from boxliner import config
+
+
+@pytest.fixture
+def config_instance():
+    args = {'debug': False}
+    command_args = {
+        'compose_file': 'compose_file',
+        'goss_file': 'goss_file',
+        'goss_binary': 'goss_binary',
+        'goss_command': 'goss_command',
+    }
+
+    return config.Config(args, command_args)

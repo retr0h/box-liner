@@ -20,43 +20,35 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import click
+from boxliner import config
+from boxliner import util
+from boxliner.client import compose
+from boxliner.client import docker
 
-from boxliner import main
 
+def main(args, command_args):
+    __config = config.Config(args, command_args)
+    __compose = compose.Compose(__config)
+    __docker = docker.Docker()
+    __compose.up()
 
-@click.command()
-@click.option(
-    '--compose-file',
-    default='docker-compose.yml',
-    help='Path to docker-compose file.  Default docker-compose.yml',
-    type=click.File('r'))
-@click.option(
-    '--goss-file',
-    default='test.yml',
-    help='Path to Goss test file.  Default test.yml',
-    type=click.File('r'))
-@click.option(
-    '--goss-binary',
-    default='goss-linux-amd64',
-    help='Path to Goss binary.  Default goss-linux-amd64',
-    type=click.File('r'))
-@click.option(
-    '--goss-command',
-    default='/goss validate --color --format documentation',
-    help='Goss command to execute.')
-@click.pass_context
-def validate(ctx, compose_file, goss_file, goss_binary, goss_command):
-    """ Run and validate the container. """
+    containers = __compose.ps()
+    statues = []
+    for container in containers:
+        name, _, _ = container
+        exit_code, output = __docker.exec_run(name, __config.goss_command)
+        statues.append([name, exit_code, output])
 
-    ctx_args = ctx.obj.get('args')
-    args = {'debug': ctx_args.get('debug')}
+    for status in statues:
+        name, exit_code, output = status
+        msg = '--> {}'.format(util.cyan_text(name))
+        print(msg)
 
-    command_args = {
-        'compose_file': compose_file.name,
-        'goss_file': goss_file.name,
-        'goss_binary': goss_binary.name,
-        'goss_command': goss_command,
-    }
+        if exit_code != 0:
+            print(output.decode('utf-8'))
 
-    main.main(args, command_args)
+    __compose.down()
+
+    if exit_code != 0:
+        msg = 'Validation Failed'
+        util.sysexit_with_message(msg)
