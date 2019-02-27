@@ -116,7 +116,10 @@ def test_safe_load_exits_when_cannot_parse():
 
 
 def test_get_run_command():
-    commands = ['ls', '-l']
+    commands = [
+        'ls',
+        '-l',
+    ]
     x = '{} -l'.format(plumbum.local.which('ls'))
 
     assert x == str(util.get_run_command(commands))
@@ -144,17 +147,24 @@ def test_run_command(_patched_print_debug,
 
 
 def test_run_command_streams_stdout(capsys):
-    cmd = util.get_run_command(['echo', 'foo'])
+    cmd = util.get_run_command(['echo', 'stdout'])
     util.run_command(cmd, stream=True)
 
     captured = capsys.readouterr()
-    assert 'foo\n' == captured.out
+    assert 'stdout\n' == captured.out
 
 
-@pytest.mark.skip("Pending Implementation")
-def test_run_command_streams_stderr():
-    # Need to test stderr when process writes to both.
-    pass
+def test_run_command_streams_stderr(capsys):
+    commands = [
+        'python',
+        '-c',
+        'import sys; sys.stderr.write("stderr")',
+    ]
+    cmd = util.get_run_command(commands)
+    util.run_command(cmd, stream=True)
+
+    captured = capsys.readouterr()
+    assert 'stderr\n' == captured.out
 
 
 def test_run_command_with_debug(_patched_print_debug,
@@ -168,16 +178,18 @@ def test_run_command_with_debug(_patched_print_debug,
 
 
 def test_run_command_raises_when_command_fails(_patched_red_text):
-    commands = ['false']
-    command = util.get_run_command(commands)
+    commands = [
+        'python',
+        '-c',
+        'import sys; sys.exit("stderr")',
+    ]
+    cmd = util.get_run_command(commands)
     with pytest.raises(SystemExit) as e:
-        util.run_command(command)
+        util.run_command(cmd)
 
     assert 1 == e.value.code
-    msg = 'ERROR: Command failed to execute\n\n'
+    msg = 'ERROR: Command failed to execute\n\nstderr\n'
     _patched_red_text.assert_called_once_with(msg)
-
-    # TODO(retr0h): Test stderr
 
 
 def test_print_boxliner_environment_vars(mocker, _patched_print_debug):
