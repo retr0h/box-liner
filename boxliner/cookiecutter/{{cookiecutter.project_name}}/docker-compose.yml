@@ -1,0 +1,19 @@
+---
+version: "{{ cookiecutter.compose_version }}"
+services:
+  {{ cookiecutter.project_name }}-1:
+    image: {{ cookiecutter.compose_image }}
+    hostname: {{ cookiecutter.project_name }}-1
+    command: >-
+      {{ cookiecutter.compose_command }}
+    volumes:
+      - ${BOXLINER_GOSS_FILE}:/goss.yaml:ro
+      - ${BOXLINER_GOSS_BINARY}:/goss:ro
+  {{ cookiecutter.project_name }}-2:
+    image: {{ cookiecutter.compose_image }}
+    hostname: {{ cookiecutter.project_name }}-2
+    command: >-
+      {{ cookiecutter.compose_command }}
+    volumes:
+      - ${BOXLINER_GOSS_FILE}:/goss.yaml:ro
+      - ${BOXLINER_GOSS_BINARY}:/goss:ro

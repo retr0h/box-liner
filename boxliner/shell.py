@@ -55,3 +55,4 @@ def main(ctx, debug):  # pragma: no cover
 
 
 main.add_command(cmd.validate.validate)
+main.add_command(cmd.init.init)
