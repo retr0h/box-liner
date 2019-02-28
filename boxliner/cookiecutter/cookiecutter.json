@@ -1,0 +1,7 @@
+{
+    "project_name": "OVERRIDEN",
+    "test_directory": "test",
+    "compose_version": "3",
+    "compose_image": "OVERRIDEN",
+    "compose_command": "OVERRIEN"
+}

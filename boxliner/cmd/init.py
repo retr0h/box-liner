@@ -20,42 +20,47 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import click
+import os
 
-from boxliner import main
+import click
+import cookiecutter
+import cookiecutter.main
+
+TEMPLATE_DIR = os.path.join(
+    os.path.dirname(__file__), os.path.pardir, 'cookiecutter')
+
+
+def _process_template(extra_context, output_dir, overwrite=True):
+    cookiecutter.main.cookiecutter(
+        TEMPLATE_DIR,
+        extra_context=extra_context,
+        output_dir=output_dir,
+        overwrite_if_exists=overwrite,
+        no_input=True,
+    )
 
 
 @click.command()
+@click.option('--project-name', required=True, help='Name of project.')
 @click.option(
-    '--compose-file',
-    default='docker-compose.yml',
-    help='Path to docker-compose file.  [docker-compose.yml]',
-    type=click.File('r'))
+    '--image',
+    default='solita/ubuntu-systemd:latest',
+    help='Image to test.  [solita/ubuntu-systemd:latest]')
 @click.option(
-    '--goss-file',
-    default='test.yml',
-    help='Path to Goss test file.  [test.yml]',
-    type=click.File('r'))
-@click.option(
-    '--goss-binary',
-    default='goss-linux-amd64',
-    help='Path to Goss binary.  [goss-linux-amd64]',
-    type=click.File('r'))
-@click.option(
-    '--goss-command',
-    default='/goss validate --color --format documentation',
-    help='Goss command to execute.')
+    '--command',
+    default='/sbin/init',
+    help='Command image will execute.  [/sbin/init]')
 @click.pass_context
-def validate(ctx, compose_file, goss_file, goss_binary, goss_command):
-    """ Run and validate the container. """
+def init(ctx, project_name, image, command):
+    """ Initialize a project structure. """
 
-    ctx_args = ctx.obj.get('args')
-    args = {'debug': ctx_args.get('debug')}
+    #  ctx_args = ctx.obj.get('args')
+    #  args = {'debug': ctx_args.get('debug')}
     command_args = {
-        'compose_file': compose_file.name,
-        'goss_file': goss_file.name,
-        'goss_binary': goss_binary.name,
-        'goss_command': goss_command,
+        'project_name': project_name,
+        'compose_image': image,
+        'compose_command': command,
     }
 
-    main.main(args, command_args)
+    output_dir = os.getcwd()
+    _process_template(command_args, output_dir)
