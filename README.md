@@ -28,33 +28,10 @@ tests in the future.
 
 ## Usage
 
-Create a `docker-compose.yml` file similar to the following:
+Create a new project, and modify the generated Docker Compose and Goss tests.
+Reference Goss' full [documentation][1] for further details.
 
-```yaml
----
-version: "3"
-services:
-  test-1:
-    image: solita/ubuntu-systemd:latest
-    hostname: test-1
-    command: >-
-      /sbin/init
-    volumes:
-      - ${BOXLINER_GOSS_FILE}:/goss.yaml:ro
-      - ${BOXLINER_GOSS_BINARY}:/goss:ro
-```
-
-Create a `test.yml` with the tests to perform.  Reference Goss' full
-[documentation][1] for further details.
-
-
-```yaml
----
-group:
-  sshd:
-    exists: true
-    gid: 74
-```
+    $ box-liner init
 
 [3]: https://github.com/aelsabbahy/goss/blob/master/docs/manual.md
 
