@@ -22,7 +22,7 @@
 
 import pytest
 
-from boxliner.client import compose
+from boxliner.driver import compose
 
 
 @pytest.fixture

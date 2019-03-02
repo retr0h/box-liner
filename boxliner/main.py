@@ -22,8 +22,8 @@
 
 from boxliner import config
 from boxliner import util
-from boxliner.client import compose
-from boxliner.client import docker
+from boxliner.driver import compose
+from boxliner.driver import docker
 
 
 def main(args, command_args):

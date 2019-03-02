@@ -22,7 +22,7 @@
 
 import pytest
 
-from boxliner.client import docker
+from boxliner.driver import docker
 
 
 @pytest.fixture
