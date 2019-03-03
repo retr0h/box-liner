@@ -142,6 +142,7 @@ def test_down(_instance, _patched_get_run_command, _patched_run_command):
         '--log-level',
         _instance.log_level,
         'down',
+        '--remove-orphans',
     ]
 
     _patched_get_run_command.assert_called_once_with(
