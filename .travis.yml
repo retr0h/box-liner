@@ -1,14 +1,23 @@
 ---
+dist: xenial
+git:
+  depth: 100
 language: python
 python:
   - "3.6"
   # - "3.7"
-
+services:
+  - docker
+env:
+  global:
+    - GOSS_VERSION=0.3.6
+    - GOSS_BINARY=goss-linux-amd64
+    - GOSS_BINARY_PATH=/tmp/${GOSS_BINARY}
 install:
   - pip install tox-travis codecov
-
+  - curl -L https://github.com/aelsabbahy/goss/releases/download/v${GOSS_VERSION}/${GOSS_BINARY} -o ${GOSS_BINARY_PATH}
+  - chmod +rx ${GOSS_BINARY_PATH}
 script:
   - tox
-
 after_success:
   - (cd .tox/ && codecov -v -X gcov --required)

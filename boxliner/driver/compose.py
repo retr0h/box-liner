@@ -102,6 +102,7 @@ class Compose(object):
             '--log-level',
             self.log_level,
             'down',
+            '--remove-orphans',
         ]
         with halo.Halo(
                 text='Running Compose DOWN', spinner='dots',

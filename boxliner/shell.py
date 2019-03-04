@@ -45,6 +45,8 @@ def main(ctx, debug):  # pragma: no cover
     | | | |  X  -- |  | | | |-' |
     ^-' `-' ' `    `' ' ' ' `-' '
 
+    Docker container validation.
+
     Enable autocomplete issue:
 
       eval "$(_BOX_LINER_COMPLETE=source box-liner)"

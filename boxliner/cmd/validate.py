@@ -33,8 +33,8 @@ from boxliner import main
     type=click.File('r'))
 @click.option(
     '--goss-file',
-    default='test.yml',
-    help='Path to Goss test file.  [test.yml]',
+    default='test/test.yml',
+    help='Path to Goss test file.  [test/test.yml]',
     type=click.File('r'))
 @click.option(
     '--goss-binary',
