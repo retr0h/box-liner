@@ -31,13 +31,14 @@ tests in the future.
 Create a new project, and modify the generated Docker Compose and Goss tests.
 Reference Goss' full [documentation][1] for further details.
 
-    $ box-liner init
+    $ box-liner init --project-name test-project
 
 [3]: https://github.com/aelsabbahy/goss/blob/master/docs/manual.md
 
 Validate the container.
 
-    $ box-liner validate
+    $ cd test-project
+    $ box-liner validate --goss-binary /path/to/goss/binary
 
 ### Pass
 
