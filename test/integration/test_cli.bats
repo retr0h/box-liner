@@ -27,9 +27,6 @@ load 'vendor/test_helpers/bats-support/load'
 setup() {
 	TEST_TEMP_DIR="$(temp_make)"
 	TEST_VENV="${TEST_TEMP_DIR}/.venv"
-    # NOTE(retr0h): GOSS_BINARY_PATH overrien by travis.
-    # TODO(retr0h): The default location needs handled better.
-	GOSS_BINARY_PATH="${GOSS_BINARY_PATH:-${HOME}/Downloads/goss-linux-amd64}"
 }
 
 teardown() {
@@ -38,9 +35,6 @@ teardown() {
 
 @test "invoke box-liner without arguments prints usage" {
 	run box-liner
-
-    echo "status = ${status}"
-    echo "output = ${output}"
 
 	[ "${status}" -eq 0 ]
 	echo "${output}" | grep "Docker container validation."
@@ -55,24 +49,17 @@ teardown() {
 
 	[ "${status}" -eq 0 ]
 	assert_file_exist ./bats-test/docker-compose.yml
-	assert_file_exist ./bats-test/test/test.yml
+	assert_file_exist ./bats-test/test/test.rb
 }
 
 @test "invoke box-liner validate subcommand" {
 	cd "${TEST_TEMP_DIR}"
 	run box-liner init --project-name bats-test
 
-    echo "status = ${status}"
-    echo "output = ${output}"
-
 	[ "${status}" -eq 0 ]
 
 	cd bats-test
-	run box-liner validate --goss-binary "${GOSS_BINARY_PATH}"
-
-    echo "status = ${status}"
-    echo "output = ${output}"
-
+	run box-liner validate
 
 	[ "${status}" -eq 0 ]
 }

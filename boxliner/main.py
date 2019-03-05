@@ -24,31 +24,32 @@ from boxliner import config
 from boxliner import util
 from boxliner.driver import compose
 from boxliner.driver import docker
+from boxliner.validator import inspec
 
 
 def main(args, command_args):
     __config = config.Config(args, command_args)
     __compose = compose.Compose(__config)
     __docker = docker.Docker()
+    __inspec = inspec.Inspec(__config)
+
     __compose.up()
 
     containers = __compose.ps()
-    statues = []
+    statuses = {}
     for container in containers:
         name, _, _ = container
-        exit_code, output = __docker.exec_run(name, __config.goss_command)
-        statues.append([name, exit_code, output])
-
-    for status in statues:
-        name, exit_code, output = status
-        msg = '--> {}'.format(util.cyan_text(name))
-        print(msg)
-
-        if exit_code != 0:
-            print(output.decode('utf-8'))
+        profiles = __docker.get_profiles(name)
+        for profile in profiles:
+            try:
+                __inspec.exec(profile, name)
+            # TODO(retr0h): Handle better exception.
+            except SystemExit:
+                statuses.update({name: {'failed': True}})
 
     __compose.down()
 
-    if exit_code != 0:
-        msg = 'Validation Failed'
+    failed = [name for (name, status) in statuses.items() if status['failed']]
+    if failed:
+        msg = "Validation Failed on '{}'".format(', '.join(failed))
         util.sysexit_with_message(msg)

@@ -65,7 +65,7 @@ def test_sysexit():
     with pytest.raises(SystemExit) as e:
         util.sysexit()
 
-        assert 1 == e.value.code
+    assert 1 == e.value.code
 
 
 def test_sysexit_with_custom_code():

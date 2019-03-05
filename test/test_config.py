@@ -29,24 +29,6 @@ def test_compose_file_property(config_instance):
     assert x == config_instance.compose_file
 
 
-def test_goss_file_property(config_instance):
-    x = os.path.abspath('goss_file')
-
-    assert x == config_instance.goss_file
-
-
-def test_goss_binary_property(config_instance):
-    x = 'goss_binary'
-
-    assert x == config_instance.goss_binary
-
-
-def test_goss_command_property(config_instance):
-    x = 'goss_command'
-
-    assert x == config_instance.goss_command
-
-
 def test_debug_property(config_instance):
     assert not config_instance.debug
 
@@ -59,9 +41,5 @@ def test_debug_setter(config_instance):
 
 def test_env_property(config_instance):
     env = os.environ.copy()
-    env.update({
-        'BOXLINER_GOSS_FILE': os.path.abspath('goss_file'),
-        'BOXLINER_GOSS_BINARY': 'goss_binary',
-    })
 
     assert env == config_instance.env

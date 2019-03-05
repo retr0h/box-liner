@@ -30,9 +30,19 @@ def config_instance():
     args = {'debug': False}
     command_args = {
         'compose_file': 'compose_file',
-        'goss_file': 'goss_file',
-        'goss_binary': 'goss_binary',
-        'goss_command': 'goss_command',
     }
 
     return config.Config(args, command_args)
+
+
+@pytest.fixture
+def patched_get_run_command(mocker):
+    return mocker.patch('boxliner.util.get_run_command')
+
+
+@pytest.fixture
+def patched_run_command(mocker):
+    m = mocker.patch('boxliner.util.run_command')
+    m.return_value = mocker.Mock(spec=open)
+
+    return m
