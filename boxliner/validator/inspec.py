@@ -20,35 +20,34 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import pytest
-
-from boxliner import config
-from boxliner import config_schema
-
-pytestmark = pytest.mark.skip("Pending Implementation")
+from boxliner import util
 
 
-def test_validate():
-    d = {
-        'goss_file': '.test.yml',
-        'goss_binary': '/usr/local/bin/goss-linux-amd64',
-    }
-    result = config_schema.ConfigSchema().load(d)
-    x = {}
+class Inspec(object):
+    def __init__(self, config):
+        self._config = config
 
-    assert x == result.errors
-    assert isinstance(result.data, config.Config)
+    @property
+    def stream(self):
+        return True
 
+    @property
+    def log_level(self):
+        # NOTE(retr0h): DEBUG seems way too verbose and not too useful
+        # for general box-liner use.
+        return 'INFO'
 
-def test_validate_has_errors():
-    d = {
-        'goss_file': 3,
-        'goss_binary': 4,
-    }
-    result = config_schema.ConfigSchema().load(d)
-    x = {
-        'goss_binary': ['Not a valid string.'],
-        'goss_file': ['Not a valid string.'],
-    }
+    def exec(self, profile, container_name):
+        # debug on debug
+        commands = [
+            'inspec',
+            'exec',
+            '--log-level',
+            self.log_level,
+            profile,
+            '-t',
+            'docker://{}'.format(container_name),
+        ]
 
-    assert x == result.errors
+        cmd = util.get_run_command(commands, env=self._config.env)
+        util.run_command(cmd, stream=self.stream, debug=self._config.debug)

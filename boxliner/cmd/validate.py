@@ -31,31 +31,14 @@ from boxliner import main
     default='docker-compose.yml',
     help='Path to docker-compose file.  [docker-compose.yml]',
     type=click.File('r'))
-@click.option(
-    '--goss-file',
-    default='test/test.yml',
-    help='Path to Goss test file.  [test/test.yml]',
-    type=click.File('r'))
-@click.option(
-    '--goss-binary',
-    default='goss-linux-amd64',
-    help='Path to Goss binary.  [goss-linux-amd64]',
-    type=click.File('r'))
-@click.option(
-    '--goss-command',
-    default='/goss validate --color --format documentation',
-    help='Goss command to execute.')
 @click.pass_context
-def validate(ctx, compose_file, goss_file, goss_binary, goss_command):
+def validate(ctx, compose_file):
     """ Run and validate the container. """
 
     ctx_args = ctx.obj.get('args')
     args = {'debug': ctx_args.get('debug')}
     command_args = {
         'compose_file': compose_file.name,
-        'goss_file': goss_file.name,
-        'goss_binary': goss_binary.name,
-        'goss_command': goss_command,
     }
 
     main.main(args, command_args)

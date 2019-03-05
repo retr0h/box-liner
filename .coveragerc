@@ -5,4 +5,4 @@ omit =
 
 [report]
 fail_under =
-  80
+  84

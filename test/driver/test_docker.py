@@ -26,13 +26,53 @@ from boxliner.driver import docker
 
 
 @pytest.fixture
-def _instance():
-    return docker.Docker()
+def _patched_docker_containers_get(mocker):
+    return mocker.patch('docker.models.containers.ContainerCollection.get')
 
 
-def test_exec_run(_instance, mocker):
-    m = mocker.patch('docker.models.containers.ContainerCollection.get')
-    m.return_value = mocker.Mock(exec_run=mocker.Mock(return_value='foo'))
+@pytest.fixture
+def _instance(config_instance):
+    return docker.Docker(config_instance)
+
+
+def test_exec_run(_instance, _patched_docker_containers_get, mocker):
+    _patched_docker_containers_get.return_value = mocker.Mock(
+        exec_run=mocker.Mock(return_value='foo'))
     x = 'foo'
 
     assert x == _instance.exec_run('foo', 'bar')
+
+
+def test_get_profiles(_instance, _patched_docker_containers_get, mocker):
+    verifier_data = """
+verifier:
+  profiles:
+    - foo
+    - bar
+    - baz
+"""
+    patched_labels = mocker.Mock().return_value = {
+        'com.retr0h.boxliner': verifier_data
+    }
+    _patched_docker_containers_get.return_value = mocker.Mock(
+        labels=patched_labels)
+    x = [
+        'foo',
+        'bar',
+        'baz',
+    ]
+
+    assert x == _instance.get_profiles('foo')
+
+
+def test_get_profiles_handles_missing_verifier_data(
+        _instance, _patched_docker_containers_get, mocker):
+    _patched_docker_containers_get.return_value = mocker.Mock(labels={})
+    _patched_sysexit_with_message = mocker.patch(
+        'boxliner.util.sysexit_with_message')
+
+    _instance.get_profiles('foo')
+
+    msg = "Missing 'labels.com.retr0h.boxliner' from {}".format(
+        _instance._config.compose_file)
+    _patched_sysexit_with_message.assert_called_once_with(msg)

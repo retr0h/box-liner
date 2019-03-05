@@ -9,16 +9,14 @@ specified containers.
 
 Intended to test [Docker][1] containers post build and prior to publishing.
 The container(s) lifecycle is managed through [Docker Compose][2], and
-validation is currently handled by [Goss][3] with plans to swich to
-[InSpec][4].
+validation is handled by [InSpec][3].
 
 Tests are run local to the container, with plans to add external integration
 tests in the future.
 
 [1]: https://www.docker.com/
 [2]: https://docs.docker.com/compose/
-[3]: https://github.com/aelsabbahy/goss/
-[4]: https://www.inspec.io/
+[3]: https://www.inspec.io/
 
 ## Install
 
@@ -26,19 +24,26 @@ tests in the future.
     $ source .venv/bin/activate
     $ pip install box-liner
 
+## Dependencies
+
+[InSpec][4] must be installed on the system running Box Liner.  In the future a
+client container will be provided.
+
+[4]: https://www.inspec.io/downloads/
+
 ## Usage
 
-Create a new project, and modify the generated Docker Compose and Goss tests.
-Reference Goss' full [documentation][1] for further details.
+Create a new project, and modify the generated Docker Compose and InSpec tests.
+Reference InSpec's full [documentation][5] for further details.
 
     $ box-liner init --project-name test-project
 
-[3]: https://github.com/aelsabbahy/goss/blob/master/docs/manual.md
+[5]: https://www.inspec.io/docs/
 
 Validate the container.
 
     $ cd test-project
-    $ box-liner validate --goss-binary /path/to/goss/binary
+    $ box-liner validate
 
 ### Pass
 
