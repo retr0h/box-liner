@@ -30,7 +30,7 @@ from boxliner.validator import inspec
 def main(args, command_args):
     __config = config.Config(args, command_args)
     __compose = compose.Compose(__config)
-    __docker = docker.Docker()
+    __docker = docker.Docker(__config)
     __inspec = inspec.Inspec(__config)
 
     __compose.up()
