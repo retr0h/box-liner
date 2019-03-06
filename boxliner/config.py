@@ -44,18 +44,6 @@ class Config(object):
         return os.path.abspath(self._command_args['compose_file'])
 
     @property
-    def goss_file(self):
-        return os.path.abspath(self._command_args['goss_file'])
-
-    @property
-    def goss_binary(self):
-        return self._command_args['goss_binary']
-
-    @property
-    def goss_command(self):
-        return self._command_args['goss_command']
-
-    @property
     def debug(self):
         return self._debug
 
@@ -66,9 +54,6 @@ class Config(object):
     @property
     def env(self):
         env = os.environ.copy()
-        env.update({
-            'BOXLINER_GOSS_FILE': self.goss_file,
-            'BOXLINER_GOSS_BINARY': self.goss_binary,
-        })
+        env.update({})
 
         return env

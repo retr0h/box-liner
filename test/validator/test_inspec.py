@@ -20,20 +20,43 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import marshmallow
+import pytest
 
-from boxliner import config
+from boxliner.validator import inspec
 
 
-class ConfigSchema(marshmallow.Schema):
-    compose_file = marshmallow.fields.Str()
-    goss_file = marshmallow.fields.Str()
-    goss_file = marshmallow.fields.Str()
-    goss_binary = marshmallow.fields.Str()
-    goss_command = marshmallow.fields.Str()
-    debug = marshmallow.fields.Bool()
-    env = marshmallow.fields.Dict()
+@pytest.fixture
+def _instance(config_instance):
+    return inspec.Inspec(config_instance)
 
-    @marshmallow.post_load
-    def make_config(self, data):
-        return config.Config(data)
+
+def test_stream_property(_instance):
+    assert _instance.stream
+
+
+def test_log_level_property(_instance):
+    x = 'INFO'
+
+    assert x == _instance.log_level
+
+
+def test_exec(_instance, patched_get_run_command, patched_run_command):
+    patched_get_run_command.return_value = 'exec command to execute'
+    _instance.exec('profile', 'container_name')
+
+    x = [
+        'inspec',
+        'exec',
+        '--log-level',
+        'INFO',
+        'profile',
+        '-t',
+        'docker://container_name',
+    ]
+    patched_get_run_command.assert_called_once_with(
+        x, env=_instance._config.env)
+    patched_run_command.assert_called_once_with(
+        'exec command to execute',
+        stream=True,
+        debug=False,
+    )

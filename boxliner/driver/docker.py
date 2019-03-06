@@ -22,12 +22,29 @@
 
 import docker
 
+from boxliner import util
+
 
 class Docker(object):
-    def __init__(self):
+    def __init__(self, config):
+        self._config = config
         self._client = docker.from_env()
 
     def exec_run(self, name, command):
         c = self._client.containers.get(name)
 
         return c.exec_run(cmd=command)
+
+    def get_profiles(self, name):
+        c = self._client.containers.get(name)
+        try:
+            labels = c.labels['com.retr0h.boxliner']
+            labels_dict = util.safe_load(labels)
+            print("D")
+            print(labels_dict)
+
+            return labels_dict['verifier']['profiles']
+        except KeyError:
+            msg = "Missing 'labels.com.retr0h.boxliner' from {}".format(
+                self._config.compose_file)
+            util.sysexit_with_message(msg)

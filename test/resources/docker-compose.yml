@@ -1,0 +1,23 @@
+---
+version: "3"
+services:
+  test-1:
+    image: solita/ubuntu-systemd:latest
+    labels:
+      com.retr0h.boxliner: |
+        verifier:
+          profiles:
+            - ../base-images/inspec_profiles/
+    hostname: etcd-0
+    command: >-
+      /sbin/init
+  test-2:
+    image: solita/ubuntu-systemd:latest
+    labels:
+      com.retr0h.boxliner: |
+        verifier:
+          profiles:
+            - ../base-images/inspec_profiles/
+    hostname: etcd-0
+    command: >-
+      /sbin/init

@@ -1,5 +1,0 @@
----
-group:
-  sshd:
-    exists: true
-    gid: 74

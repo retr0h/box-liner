@@ -104,7 +104,7 @@ def run_command(cmd, stream=False, debug=False):
             for stdout, stderr in cmd.popen().iter_lines():
                 if stdout:
                     print(stdout)
-                else:
+                if stderr:
                     print(stderr)
             return
         return cmd()
