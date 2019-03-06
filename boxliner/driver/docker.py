@@ -39,11 +39,9 @@ class Docker(object):
         c = self._client.containers.get(name)
         try:
             labels = c.labels['com.retr0h.boxliner']
-            labels_dict = util.safe_load(labels)
-            print("D")
-            print(labels_dict)
+            ld = util.safe_load(labels)
 
-            return labels_dict['verifier']['profiles']
+            return ld['verifier']['profiles']
         except KeyError:
             msg = "Missing 'labels.com.retr0h.boxliner' from {}".format(
                 self._config.compose_file)

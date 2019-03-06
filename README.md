@@ -26,8 +26,8 @@ tests in the future.
 
 ## Dependencies
 
-[InSpec][4] must be installed on the system running Box Liner.  In the future a
-client container will be provided.
+[InSpec][4] must be installed on the system running Box Liner, unless using the
+Box Liner container.  See usage below.
 
 [4]: https://www.inspec.io/downloads/
 
@@ -44,6 +44,16 @@ Validate the container.
 
     $ cd test-project
     $ box-liner validate
+
+Using the Box Liner container.
+
+    $ cd test-project
+    $ docker run --rm -it \
+        -v "$(pwd)":/tmp/$(basename "${PWD}"):ro \
+        -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        -w /tmp/$(basename "${PWD}") \
+        retr0h/boxliner:0.0.1.dev37 \
+        box-liner validate
 
 ### Pass
 
