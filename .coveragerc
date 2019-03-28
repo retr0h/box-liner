@@ -1,8 +1,0 @@
-[run]
-omit =
-  boxliner/cmd/*
-  boxliner/shell.py
-
-[report]
-fail_under =
-  84
